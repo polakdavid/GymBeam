@@ -1,0 +1,30 @@
+version: '2'
+services:
+  db:
+    image: postgres:11
+    user: root
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_DB=postgres
+    restart: always # run as a service
+    volumes:
+        - ./postgresql:/var/lib/postgresql/data
+
+  odoo13:
+    image: odoo:13
+    user: root
+    depends_on:
+      - db
+    ports:
+      - "10013:8069" # web port
+      - "20013:8072" # live chat
+    tty: true
+    command: --
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      # - ./entrypoint.sh:/entrypoint.sh   # if needed
+      - ./etc:/etc/odoo
